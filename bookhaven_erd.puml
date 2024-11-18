@@ -1,0 +1,112 @@
+@startuml BookHaven ERD
+
+' Styling
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor LightBlue
+    ArrowColor Black
+    BorderColor DarkBlue
+}
+
+' Entities
+entity "Authors" as authors {
+    * AuthorID : INT <<PK>>
+    --
+    * FirstName : VARCHAR(50)
+    * LastName : VARCHAR(50)
+    Biography : TEXT
+    Email : VARCHAR(100)
+    CreatedDate : DATETIME
+    UpdatedDate : DATETIME
+}
+
+entity "Publishers" as publishers {
+    * PublisherID : INT <<PK>>
+    --
+    * Name : VARCHAR(100)
+    Address : TEXT
+    Phone : VARCHAR(20)
+    Email : VARCHAR(100)
+    CreatedDate : DATETIME
+    UpdatedDate : DATETIME
+}
+
+entity "Books" as books {
+    * BookID : INT <<PK>>
+    --
+    * ISBN : VARCHAR(13) <<unique>>
+    * Title : VARCHAR(200)
+    PublisherID : INT <<FK>>
+    PublicationDate : DATE
+    * Price : DECIMAL(10,2)
+    StockQuantity : INT
+    Genre : VARCHAR(50)
+    Description : TEXT
+    CreatedDate : DATETIME
+    UpdatedDate : DATETIME
+}
+
+entity "BookAuthors" as bookauthors {
+    * BookID : INT <<PK, FK>>
+    * AuthorID : INT <<PK, FK>>
+}
+
+entity "Customers" as customers {
+    * CustomerID : INT <<PK>>
+    --
+    * FirstName : VARCHAR(50)
+    * LastName : VARCHAR(50)
+    * Email : VARCHAR(100) <<unique>>
+    Phone : VARCHAR(20)
+    Address : TEXT
+    JoinDate : DATETIME
+    CreatedDate : DATETIME
+    UpdatedDate : DATETIME
+}
+
+entity "Orders" as orders {
+    * OrderID : INT <<PK>>
+    --
+    CustomerID : INT <<FK>>
+    OrderDate : DATETIME
+    * TotalAmount : DECIMAL(10,2)
+    Status : VARCHAR(20)
+    ShippingAddress : TEXT
+    CreatedDate : DATETIME
+    UpdatedDate : DATETIME
+}
+
+entity "OrderDetails" as orderdetails {
+    * OrderID : INT <<PK, FK>>
+    * BookID : INT <<PK, FK>>
+    --
+    * Quantity : INT
+    * UnitPrice : DECIMAL(10,2)
+    * Subtotal : DECIMAL(10,2)
+    CreatedDate : DATETIME
+    UpdatedDate : DATETIME
+}
+
+entity "Reviews" as reviews {
+    * ReviewID : INT <<PK>>
+    --
+    BookID : INT <<FK>>
+    CustomerID : INT <<FK>>
+    * Rating : INT
+    Comment : TEXT
+    ReviewDate : DATETIME
+    CreatedDate : DATETIME
+    UpdatedDate : DATETIME
+}
+
+' Relationships
+books }|--|| publishers : "Published by"
+books ||--o{ bookauthors
+bookauthors }o--|| authors
+customers ||--o{ orders : "Places"
+orders ||--o{ orderdetails : "Contains"
+books ||--o{ orderdetails : "Included in"
+books ||--o{ reviews : "Has"
+customers ||--o{ reviews : "Writes"
+
+@enduml
